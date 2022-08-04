@@ -1,0 +1,147 @@
+<html>
+    <head>
+
+        <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 100vw;
+                height: 100vh;
+            }
+            #grid {
+                aspect-ratio: 2/1;
+                width: 100%;
+                cursor: none;
+
+            }
+            #canvas {
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+                height: 100%;
+
+            }
+            #cursor {
+                cursor: none;
+                width: 2vw;
+                height: 2vw;
+                border-radius:1vw;
+                z-index: 10;
+                background-color: black;
+                position: absolute;
+                transition: all .1s ease-in-out;
+                transform:translate(-50%, -50%)
+            }
+            #canvasinner {
+                width: 80%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="canvas">
+            <div id="canvasinner">
+                <div id="cursor">
+                </div>
+                <canvas id='grid'>
+                </canvas>
+            </div>
+        </div>
+    </body>
+    <script type="module">
+
+        const dcanvas = document.getElementById("grid")
+        const canvas = document.createElement("canvas")
+        const icanvas = document.createElement("canvas")
+        const cctx = canvas.getContext("2d")
+        const ictx = icanvas.getContext("2d")
+        const dctx = dcanvas.getContext("2d")
+        const cursor = document.getElementById("cursor")
+
+
+        const xdiv = 10;
+        const qmax = 10;
+
+        function getInnerSize(elem) {
+            return [parseFloat(window.getComputedStyle(elem).width),
+                    parseFloat(window.getComputedStyle(elem).height)]
+        };
+
+        function updateCanvasSize(dom, canvases) {
+            for (let c of canvases) {
+                let [cW, cH] = getInnerSize(dom);
+                c.width = cW;
+                c.height = cH;
+            }
+        };
+
+        function drawGrid(canvas, ctx) {
+            let w = canvas.width,
+                h = canvas.height;
+
+            let spacing = w / xdiv;
+            console.log(spacing, w / xdiv)
+            ctx.beginPath()
+            ctx.strokeStyle = "rgba(0, 255, 0, 1)"
+            for (let i = 1; i < xdiv; i++) {
+                ctx.moveTo(Math.round(i * spacing) + .5, 0);
+                ctx.lineTo(Math.round(i * spacing) + .5, h);
+                ctx.stroke()
+            }
+            for (let i = 1; i < xdiv / 2; i++) {
+                ctx.moveTo(0, Math.round(i * spacing) + .5);
+                ctx.lineTo(w, Math.round(i * spacing) + .5);
+                ctx.stroke()
+            }
+
+        };
+        var queue = [];
+        function mouseTracker(e, dcanvas, cursor) {
+            var rect = dcanvas.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
+            let w = dcanvas.width,
+                h = dcanvas.height;
+            const spacing = w / xdiv;
+            x = Math.round((x / dcanvas.width) * xdiv) * spacing
+            y = Math.round((y / dcanvas.height) * (xdiv / 2)) * spacing
+
+            if (queue[queue.length - 1] != [x, y]) {
+                queue.push([x, y])
+            }
+            if (queue.length > qmax) {
+                queue = queue.slice(queue.length - (qmax + 1),queue.length-1)
+                console.log(queue.length)
+            }
+        }
+        function moveCursor() {
+            if (queue.length > 0) {
+                console.log(queue)
+                let pos = queue.shift()
+                cursor.style.marginLeft = pos[0]
+                cursor.style.marginTop = pos[1]
+            }
+        }
+
+        window.setInterval(moveCursor, 10)
+
+        function redraw() {
+            dctx.drawImage(canvas, 0, 0);
+            dctx.drawImage(icanvas, 2, 0);
+        }
+
+        dcanvas.addEventListener('mousemove', e => {mouseTracker(e, dcanvas, cursor); redraw()})
+
+        window.addEventListener('resize', ()=>{
+            updateCanvasSize(dcanvas, [canvas, icanvas, dcanvas]); 
+            drawGrid(canvas, cctx); 
+            redraw()
+        });
+
+        updateCanvasSize(dcanvas, [canvas, icanvas, dcanvas]);
+        drawGrid(canvas, cctx)
+        redraw()
+    </script>
+
+</html>
