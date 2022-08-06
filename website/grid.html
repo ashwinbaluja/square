@@ -32,10 +32,15 @@
                 background-color: black;
                 position: absolute;
                 transition: all .1s ease-in-out;
-                transform:translate(-50%, -50%)
+                transform:translate(-50%, -50%);
+                pointer-events: none;
             }
             #canvasinner {
                 width: 80%;
+            }
+            #icanvas {
+                pointer-events: none;
+                position: absolute;
             }
         </style>
     </head>
@@ -44,23 +49,38 @@
             <div id="canvasinner">
                 <div id="cursor">
                 </div>
+                <canvas id='icanvas'>
+                </canvas>
                 <canvas id='grid'>
                 </canvas>
+
             </div>
+            <button id="addpoly">Finish poly</button>
+
         </div>
     </body>
-    <script type="module">
+    <script>
+        const gridcolor = "rgba(0,0,0,1)"
+        const fillcolor = "rgba(0,255,255,1)"
+        const fillpreviewcolor = "rgba(0,255,255,.3)"
+        const polyborder = "rgba(0,0,0,1)"
 
+
+        let w = 0
+        let h = 0
         const dcanvas = document.getElementById("grid")
         const canvas = document.createElement("canvas")
-        const icanvas = document.createElement("canvas")
+        const icanvas = document.getElementById("icanvas")
+
         const cctx = canvas.getContext("2d")
         const ictx = icanvas.getContext("2d")
         const dctx = dcanvas.getContext("2d")
         const cursor = document.getElementById("cursor")
+        const finish = document.getElementById("addpoly")
 
+        cctx.strokeStyle = gridcolor;
 
-        const xdiv = 10;
+        const xdiv = 30;
         const qmax = 10;
 
         function getInnerSize(elem) {
@@ -71,19 +91,17 @@
         function updateCanvasSize(dom, canvases) {
             for (let c of canvases) {
                 let [cW, cH] = getInnerSize(dom);
+                w = cW 
+                h = cH
                 c.width = cW;
                 c.height = cH;
             }
         };
 
         function drawGrid(canvas, ctx) {
-            let w = canvas.width,
-                h = canvas.height;
-
             let spacing = w / xdiv;
             console.log(spacing, w / xdiv)
             ctx.beginPath()
-            ctx.strokeStyle = "rgba(0, 255, 0, 1)"
             for (let i = 1; i < xdiv; i++) {
                 ctx.moveTo(Math.round(i * spacing) + .5, 0);
                 ctx.lineTo(Math.round(i * spacing) + .5, h);
@@ -101,8 +119,6 @@
             var rect = dcanvas.getBoundingClientRect();
             var x = e.clientX - rect.left;
             var y = e.clientY - rect.top;
-            let w = dcanvas.width,
-                h = dcanvas.height;
             const spacing = w / xdiv;
             x = Math.round((x / dcanvas.width) * xdiv) * spacing
             y = Math.round((y / dcanvas.height) * (xdiv / 2)) * spacing
@@ -112,15 +128,64 @@
             }
             if (queue.length > qmax) {
                 queue = queue.slice(queue.length - (qmax + 1),queue.length-1)
-                console.log(queue.length)
             }
         }
+
+        var polytracker = [];
+        var polys = [];
+
+        function polySetup(e, dcanvas) {
+            let rect = dcanvas.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            const spacing = w / xdiv;
+            x = Math.round((x / dcanvas.width) * xdiv) * spacing
+            y = Math.round((y / dcanvas.height) * (xdiv / 2)) * spacing
+            polytracker.push([x/w, y/h])
+        }
+
+        function polyCreate(icanvas) {
+            polys.push(polytracker)
+            polytracker = []
+        }
+
+        function singlePoly(poly, icanvas, ictx, color, stroke) {
+            console.log(poly)
+            ictx.beginPath()
+            ictx.fillStyle = color;
+            ictx.strokeStyle = polyborder;
+            ictx.moveTo(poly[0][0] * w, poly[0][1] * h)
+
+            for (let point of poly.slice(1,poly.length)) {
+                ictx.lineTo(point[0] * w, point[1] * h)
+            }
+            ictx.closePath()
+            if (stroke) {
+                ictx.stroke()
+            }
+            ictx.fill()
+        }
+
+        function polyDraw(icanvas, ictx) {
+            let w = icanvas.width,
+                h = icanvas.height;
+
+            for (let poly of polys) {
+                singlePoly(poly, icanvas, ictx, fillcolor, true)
+            }
+        }
+
         function moveCursor() {
             if (queue.length > 0) {
-                console.log(queue)
                 let pos = queue.shift()
                 cursor.style.marginLeft = pos[0]
                 cursor.style.marginTop = pos[1]
+                if (polytracker.length >= 2) {
+                    console.log('run')
+                    ictx.clearRect(0, 0, w, h);
+                    singlePoly(polytracker.concat([[pos[0] / w, pos[1] / h]]), icanvas, ictx, fillpreviewcolor, false)
+                    redraw()
+                }
             }
         }
 
@@ -128,15 +193,32 @@
 
         function redraw() {
             dctx.drawImage(canvas, 0, 0);
-            dctx.drawImage(icanvas, 2, 0);
         }
 
-        dcanvas.addEventListener('mousemove', e => {mouseTracker(e, dcanvas, cursor); redraw()})
+        dcanvas.addEventListener('mousemove', e => {
+            mouseTracker(e, dcanvas, cursor);
+            redraw();
+        })
+
+        dcanvas.addEventListener('click', e => {
+            polySetup(e, dcanvas);
+        })
+
+        finish.addEventListener('click', e => {
+            polyCreate();
+            polyDraw(canvas, cctx)
+            drawGrid(canvas, cctx);
+            redraw();
+            ictx.clearRect(0, 0, w, h);
+
+        })
+
 
         window.addEventListener('resize', ()=>{
-            updateCanvasSize(dcanvas, [canvas, icanvas, dcanvas]); 
-            drawGrid(canvas, cctx); 
-            redraw()
+            updateCanvasSize(dcanvas, [canvas, icanvas, dcanvas]);
+            polyDraw(canvas, cctx);
+            drawGrid(canvas, cctx);
+            redraw();
         });
 
         updateCanvasSize(dcanvas, [canvas, icanvas, dcanvas]);
