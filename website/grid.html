@@ -2,7 +2,15 @@
     <head>
 
         <style>
+            /*
+            --linen: #ffede1ff;
+            --ivory: #f9fbf2ff;
+            --light-cyan: #d7f9ffff;
+            --baby-blue-eyes: #afcbffff;
+            --oxford-blue: #0e1c36ff;
+            */
             html, body {
+                background-color: #0e1c36ff;
                 margin: 0;
                 padding: 0;
                 width: 100vw;
@@ -31,12 +39,16 @@
                 z-index: 10;
                 background-color: black;
                 position: absolute;
-                transition: all .1s ease-in-out;
+                transition: margin .1s, opacity .3s;
                 transform:translate(-50%, -50%);
                 pointer-events: none;
+                opacity: 0;
             }
             #canvasinner {
                 width: 80%;
+                background-color: #afcbffff;
+                padding:5%;
+                border-radius:10px;
             }
             #icanvas {
                 pointer-events: none;
@@ -189,7 +201,7 @@
             }
         }
 
-        window.setInterval(moveCursor, 10)
+        let mousetimer = window.setInterval(moveCursor, 10)
 
         function redraw() {
             dctx.drawImage(canvas, 0, 0);
@@ -202,6 +214,15 @@
 
         dcanvas.addEventListener('click', e => {
             polySetup(e, dcanvas);
+        })
+
+        dcanvas.addEventListener('mouseout', e => {
+            cursor.style.opacity = 0;
+            mousetimer = clearInterval(mousetimer)
+        })
+        dcanvas.addEventListener('mouseenter', e => {
+            cursor.style.opacity = 1;
+            mousetimer - window.setInterval(moveCursor, 10)
         })
 
         finish.addEventListener('click', e => {
