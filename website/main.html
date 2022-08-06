@@ -6,23 +6,53 @@
         <link href="grid.css" rel="stylesheet"/>
         <link href="https://cdn.jsdelivr.net/npm/cirrus-ui/dist/cirrus.min.css" rel="stylesheet">
         <style>
+            .header-brand img {
+                height: 2rem;
+                color: white;
+                opacity: 0;
+            }
+            .header-landing {
+                padding: 1.5rem;
+            }
+            .header-brand .nav-item {
+                -webkit-mask-image: url('LOGO.svg');
+                -webkit-mask-repeat: no-repeat;
+                mask-image: url('LOGO.svg')
+                mask-repeat: no-repeat;
+                color: white;
+                background-color: white;
+            }
         </style>
     </head>
     <body>
-        <div class="header header-fixed u-unselectable header-animated header-clear">
-            <div class="header-brand">
-                <div class="nav-item no-hover">
-                    <a><h6 class="title">Logo</h6></a>
+        <div class="header header-fixed u-unselectable header-animated header-landing header-clear">
+            <div class="w-100p">
+                <div class="mx-auto">
+                    <div class="header-brand">
+
+                        <div class="nav-item">
+                                <img src="LOGO.svg"></img>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
         <div class="hero fullscreen bg-blue-900">
             <div class="hero-body">
-                <div class="content">
-                    <h2 class="title text-white">I am the title.</h2>
-                    <h5 class="subtitle text-gray-300">And I am the subtitle.</h5></div>
+                <div class="content u-flex u-justify-space-around">
+                    <div class="row">
+                        <div id="landing" class="col-9">
+                            <div class="uppercase">Col-12</div>
+                        </div>
+                        <div id="buttons" class="col-3">
+                            <div class="uppercase">Col-12</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        
         <script src="grid.js"></script>
 
     </body>
