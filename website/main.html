@@ -1,48 +1,29 @@
 <html> 
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:200,300,400,600,700" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
-        <link href="grid.css" rel="stylesheet"/>
-        <link href="https://cdn.jsdelivr.net/npm/cirrus-ui/dist/cirrus.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
-
-        <!-- CSS Reset -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
-
-        <!-- Milligram CSS -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+        <link rel="stylesheet" href="main.css">
     </head>
     <body>
-        <div class="header header-fixed u-unselectable header-animated header-landing header-clear">
-            <div class="w-100p">
-                <div class="mx-auto">
-                    <div class="header-brand">
-                        <div class="nav-item">
-                                <img src="LOGO.svg"></img>
-                        </div>
-                    </div>
-
-                </div>
+        <div id="background"></div>
+        <nav class="flex">
+            <div id="logo">
+                <img src="LOGO.svg" />
             </div>
-        </div>
-        <div class="hero fullscreen bg-blue-800">
-            <div class="hero-body">
-                <div class="content u-flex u-justify-space-around">
-                    <div class="row">
-                        <div id="landing" class="col-9">
-                            <div class="uppercase">Col-12</div>
-                        </div>
-                        <div id="buttons" class="col-3">
-                            <div class="uppercase">Col-12</div>
-                        </div>
-                    </div>
-                </div>
+            <div id="spacing"></div>
+        </nav>
+        <main class="flex">
+            <div id="blurb">
+                <h1><b>Plan your event.</b></h1>
+                <p>
+                </p>
+                <button>Get Started</button>
             </div>
-        </div>
-        
+            <div id="mockup">
+               <div></div>
+            </div>
+        </main>
         <script src="grid.js"></script>
-
     </body>
 
 </html>
