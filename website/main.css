@@ -16,7 +16,7 @@ h1 {
     height: 120%;
     width: 120%;
     position: absolute;
-    background-image: url('blob-scene-haikei.svg');
+    background-image: url('blob-layered.svg');
     background-size: cover;
     transform: translate(-10%, -10%);
     -webkit-transform: translate(-10%, -10%);
